@@ -1,0 +1,97 @@
+name: chat-backend
+services:
+  redis:
+    hostname: redis
+    image: redis:latest
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    ports:
+      - 6379:6379
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - ./volumes/redis/data:/data
+      - ./volumes/redis/config/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    sysctls:
+      - net.core.somaxconn=1024
+    networks:
+      - node-chat
+  mongo:
+    hostname: mongo
+    image: mongo:latest
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "mongo --eval 'db.adminCommand(\"ping\")'"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    ports:
+      - 27017:27017
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - ./volumes/mongo/data:/data/db
+    sysctls:
+      - net.core.somaxconn=1024
+    networks:
+      - node-chat
+
+  rabbitmq:
+    hostname: rabbitmq
+    image: rabbitmq:3-management
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 5672:5672   # AMQP port
+      - 15672:15672 # Management UI port
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - ./volumes/rabbitmq/data:/var/lib/rabbitmq
+      - ./volumes/rabbitmq/logs:/var/log/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - node-chat
+
+  backend:
+    hostname: backend
+    build:
+      context: ./nodelabs-backend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - redis
+      - mongo
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/healthcheck || exit 1"]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+    ports:
+      - 5000:5000
+      - 5001:5001
+    environment:
+      - NODE_ENV=production
+      - MONGO_URL=mongodb://mongo:27017
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - PORT=5000
+      - SOCKET_PORT=5001
+      - ACCESS_SECRET=fee91f872d9b9cfcca575ab906043796
+      - REFRESH_SECRET=47f225dd540532c06c000ee534eb45e3
+      - ACCESS_EXPIRES=15m
+      - REFRESH_EXPIRES=7d
+    networks:
+      - node-chat
+networks:
+  node-chat:
+    name: node-chat
+    driver: bridge

@@ -1,0 +1,7 @@
+*.log
+nodemon.json
+node_modules
+dist
+coverage
+.env
+.vscode

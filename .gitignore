@@ -1,0 +1,3 @@
+nodelabs-backend/node_modules
+nodelabs-backend/dist
+nodelabs-backend/*.log
