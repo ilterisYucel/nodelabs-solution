@@ -25,10 +25,11 @@
 
     /* Module Resolution Options */
     "esModuleInterop": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./*"]
     },
 
     /* Source Map Options */

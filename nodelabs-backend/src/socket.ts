@@ -1,4 +1,4 @@
-import http from "http";
+import { createServer, Server as HTTPServer } from "node:http";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import { NodeLabsError } from "@/common/errors";
@@ -11,8 +11,8 @@ import { Message, MessageDocument } from "./message/model";
 const startSocketServer = (
   app: Express.Application,
   port: number
-): http.Server => {
-  const server = http.createServer(app);
+): HTTPServer => {
+  const server = createServer(app);
   const io = new Server(server, {
     cors: {
       origin: `http://localhost:${port}`,

@@ -1,6 +1,7 @@
 import { createClient, RedisClientType } from "redis";
 import { container } from "@/container";
 
+// Define the client type using ReturnType
 export class RedisClient {
   private static instances: Map<string, RedisClientType> = new Map();
 
@@ -11,7 +12,7 @@ export class RedisClient {
   ): Promise<RedisClientType> {
     if (!RedisClient.instances.has(connectionString)) {
       const client = createClient({ url: connectionString });
-      client.on("error", (err) =>
+      client.on("error", (err: any) =>
         container.logger.error(`Redis Client ${connectionString} Error: ${err}`)
       );
 

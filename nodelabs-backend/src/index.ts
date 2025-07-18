@@ -5,10 +5,10 @@ import winston from "winston";
 const { combine, timestamp, printf, colorize } = winston.format;
 
 import { startSocketServer } from "@/socket";
-import { RedisClient } from "@/redis";
+import { RedisClient } from "@/redisClient";
 import { container } from "@/container";
-import { RabbitMQClient } from "./queue";
-import { createApp } from "@/http";
+import { RabbitMQClient } from "@/queue";
+import { createApp } from "@/httpServer";
 import { Message } from "@/message/model";
 import { Conversation } from "@/conversation/model";
 import { AutoMessage } from "@/automessage/model";
@@ -108,7 +108,7 @@ const init = async (): Promise<boolean> => {
     container.rabbitmqClient = rabbitMQClient;
     container.logger.info("RabbitMQ connection is successful.");
 
-    await import("@/cron");
+    await import("@/jobs");
   } catch (err) {
     container.logger.error(err);
     status = false;

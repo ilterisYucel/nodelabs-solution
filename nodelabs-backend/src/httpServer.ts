@@ -33,8 +33,8 @@ const createApp = (): express.Express => {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'"], // Adjust based on your needs
-          styleSrc: ["'self'", "'unsafe-inline'"], // Adjust based on your needs
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: ["'self'", "data:"],
           connectSrc: ["'self'"],
           fontSrc: ["'self'"],

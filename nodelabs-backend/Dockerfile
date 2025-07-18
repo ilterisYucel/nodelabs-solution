@@ -10,8 +10,7 @@ COPY . .
 
 # Install dependencies and build
 RUN pnpm install
-RUN pnpm run build && \
-    find dist -type f -name "*.js" -exec sed -i 's/http_1.createServer/http.createServer/g' {} \;
+RUN pnpm run build
 
 # Production stage
 FROM node:22-alpine
@@ -27,5 +26,5 @@ COPY --from=builder /app/tsconfig.json ./
 # Install production dependencies only
 RUN pnpm install --prod
 
-EXPOSE 5000
+EXPOSE 5000 5001
 CMD ["pnpm", "run", "serve"]
